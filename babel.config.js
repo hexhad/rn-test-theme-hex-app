@@ -26,6 +26,7 @@ module.exports = {
           '@rtk': './src/redux/',
           '@services': './src/services/',
           '@utils': './src/utils/',
+          '@styles': './src/styles/',
         }
       },
     ],

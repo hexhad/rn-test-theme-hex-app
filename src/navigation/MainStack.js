@@ -1,25 +1,39 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import BottomTabs from '@navigation/BottomNavigation';
-import { SCREENS } from '@constants/screenConstants';
+import {SCREENS} from '@constants/screenConstants';
+import DetailsScreen from '@navigation/screens/DetailsScreen';
+import {navigationHeader} from '@styles/navigationStyles';
+import {COLORS} from '@constants/colorConstants';
+import BackButton from '@components/HeaderBackButton';
 
 const Stack = createNativeStackNavigator();
 
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
-
 const MainStack = () => {
-    
   return (
-      <Stack.Navigator screenOptions={{headerShown:false}}>
-        <Stack.Screen name={SCREENS.AUTH_STACK} component={BottomTabs} />
-      </Stack.Navigator>
+    <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={SCREENS.SECURED_STACK}>
+      <Stack.Group>
+        <Stack.Screen name={SCREENS.SECURED_STACK} component={BottomTabs} />
+      </Stack.Group>
+      <Stack.Group screenOptions={{presentation: 'modal'}}>
+        <Stack.Screen
+          name={SCREENS.DETAILS_SCREEN}
+          component={DetailsScreen}
+          options={{
+            presentation: 'modal',
+            headerLeft: () => <BackButton />,
+            headerShown: true,
+            title: '',
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: COLORS.GRAY,
+              elevation: 0,
+              shadowOpacity: 0,
+            },
+          }}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
   );
 };
 

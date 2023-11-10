@@ -9,6 +9,7 @@
       "@rtk/*":["redux/*"],
       "@services/*":["services/*"],
       "@utils/*":["utils/*"],
+      "@styles/*":["styles/*"],
     }
   }
 }

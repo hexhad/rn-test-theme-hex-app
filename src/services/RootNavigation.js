@@ -44,7 +44,7 @@ import {
     }
   };
   
-  export const RootNavigation = {
+  export const RootNavigation  = {
     navigate,
     goBack,
     pop,
