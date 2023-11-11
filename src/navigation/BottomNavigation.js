@@ -1,16 +1,9 @@
+import React, {useEffect, useRef} from 'react';
+import {Animated, Keyboard, SafeAreaView, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MainScreen from './screens/MainScreen';
+import {Bookmark, Coffee} from 'react-native-feather';
 import {SCREENS} from '@constants/screenConstants';
-import {Bookmark, Coffee, Hexagon, Settings} from 'react-native-feather';
-import {
-  View,
-  Animated,
-  TouchableOpacity,
-  Text,
-  SafeAreaView,
-  StyleSheet,
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
 import {COLORS} from '@constants/colorConstants';
 import {useDispatch, useSelector} from 'react-redux';
 import {toggleState} from '@rtk/slices/drawerSlice';
@@ -19,6 +12,8 @@ import BookmarksScreen from '@navigation/screens/BookmarksScreens';
 import {navigationHeader} from '@styles/navigationStyles';
 import Loader from '@components/Loader';
 import {getValue} from '@rtk/selectors';
+import HeaderLogo from '@components/Header/HeaderLogo';
+import HeaderRightSettings from '@components/Header/HeaderRightSettings';
 
 const Tab = createBottomTabNavigator();
 
@@ -46,32 +41,12 @@ const BottomTabs = () => {
         ]),
       ]).start();
     };
-
+    !drawerValue && Keyboard.dismiss();
     animateCustomDrawer();
   }, [drawerValue]);
 
-  const HeaderLeft = () => {
-    return (
-      <View
-        style={{
-          marginLeft: 10,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Hexagon stroke={COLORS.BLACK} width={20} height={20} />
-        <Text style={{fontSize: 20, marginLeft: 10}}>Untitled</Text>
-      </View>
-    );
-  };
-  const HeaderRight = () => {
-    return (
-      <TouchableOpacity
-        onPress={() => dispatch(toggleState())}
-        style={styles.marginRightAdjust}>
-        <Settings stroke={COLORS.BLACK} width={20} height={20} />
-      </TouchableOpacity>
-    );
+  const onPressSettingsButton = () => {
+    dispatch(toggleState());
   };
 
   return (
@@ -96,8 +71,12 @@ const BottomTabs = () => {
             name={SCREENS.MAIN_SCREEN}
             component={MainScreen}
             options={{
-              headerLeft: () => <HeaderLeft />,
-              headerRight: () => <HeaderRight />,
+              headerLeft: () => <HeaderLogo />,
+              headerRight: () => (
+                <HeaderRightSettings
+                  onPressHeaderRight={onPressSettingsButton}
+                />
+              ),
               headerTitleAlign: 'center',
               headerShown: true,
               title: '',
@@ -118,7 +97,11 @@ const BottomTabs = () => {
               headerTitleAlign: 'center',
               headerShown: true,
               title: '',
-              headerRight: () => <HeaderRight />,
+              headerRight: () => (
+                <HeaderRightSettings
+                  onPressHeaderRight={onPressSettingsButton}
+                />
+              ),
               tabBarShowLabel: false,
               tabBarIcon: ({focused}) => (
                 <Bookmark

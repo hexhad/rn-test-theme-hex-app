@@ -14,7 +14,7 @@ import {getCategories} from '@rtk/selectors';
 import NoteTaskComponent from '@components/ListItems/NoteTaskComponent';
 import NoteTaskModal from '@components/modals/NoteTaskModal';
 import {CARD_TYPES} from '@constants/cardTypes';
-import TaskModal from "@components/modals/TaskModal";
+import TaskModal from '@components/modals/TaskModal';
 
 const MainScreen = () => {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ const MainScreen = () => {
           switch (e) {
             case CARD_TYPES.NOTE_TASK:
               return setNoteTaskVisibility(true);
-              case CARD_TYPES.MULTIPLE_TODO:
+            case CARD_TYPES.MULTIPLE_TODO:
               return setTaskVisibility(true);
             default:
               return;

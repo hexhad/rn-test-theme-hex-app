@@ -17,7 +17,7 @@ const CustomDrawer = ({onPress}) => {
               <Text style={styles.headerTitle}>Settings</Text>
             </View>
             <DrawerPressable
-              label={'Button'}
+              label={'Clear all Data'}
               Icon={Hexagon}
               onPress={() => {}}
               customStyles={{}}

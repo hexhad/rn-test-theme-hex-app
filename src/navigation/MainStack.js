@@ -5,9 +5,8 @@ import BottomTabs from '@navigation/BottomNavigation';
 import {SCREENS} from '@constants/screenConstants';
 import DetailsScreen from '@navigation/screens/DetailsScreen';
 import {COLORS} from '@constants/colorConstants';
-import BackButton from '@components/HeaderBackButton';
-import HeaderCloseButton from '@components/HeaderCloseButton';
-import WebViewModalScreen from "@navigation/screens/WebViewModalScreen/WebViewModalScreen";
+import HeaderCloseButton from '@components/Header/HeaderCloseButton';
+import WebViewModalScreen from '@navigation/screens/WebViewModalScreen/WebViewModalScreen';
 
 const Stack = createStackNavigator();
 
