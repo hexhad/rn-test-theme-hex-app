@@ -1,160 +1,100 @@
-import {
-  FlatList,
-  SafeAreaView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {toggleState} from '@rtk/slices/drawerSlice';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import {COLORS} from '@constants/colorConstants';
 import {RootNavigation} from '@services/RootNavigation';
 import {SCREENS} from '@constants/screenConstants';
-import {Plus,Sliders} from 'react-native-feather';
+import SearchBar from '@components/SearchBar';
+import FloatingActionButton from '@components/Buttons/FloatingActionButton';
+import ListRenderer from '@components/ListRenderer';
+import Loader from '@components/Loader';
+import {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {getData} from '@rtk/Actions/dataActions';
+import FilterModal from '@components/modals/FilterModal';
+import {getCategories} from '@rtk/selectors';
+import NoteTaskComponent from '@components/ListItems/NoteTaskComponent';
+import NoteTaskModal from '@components/modals/NoteTaskModal';
+import {CARD_TYPES} from '@constants/cardTypes';
+import TaskModal from "@components/modals/TaskModal";
 
 const MainScreen = () => {
   const dispatch = useDispatch();
+  const {data, loading} = useSelector(state => state.data);
+  const categories = useSelector(getCategories);
+
+  const [filterVisibility, setFilterVisibility] = useState(false);
+  const [noteTaskVisibility, setNoteTaskVisibility] = useState(false);
+  const [taskVisibility, setTaskVisibility] = useState(false);
+
+  useEffect(() => {
+    dispatch(getData());
+  }, []);
 
   const onPressToNavigate = () => {
     RootNavigation.navigate(SCREENS.DETAILS_SCREEN, {});
   };
+  const onPressFAB = () => {};
 
-  const SearchBar = () => {
-    return (
-      <View
-        style={{
-          marginHorizontal: 10,
-          backgroundColor: COLORS.WHITE,
-          paddingHorizontal: 13,
-          paddingVertical:9,
-          borderRadius: 4,
-          flexDirection:'row',
-          alignItems:'center'
-        }}>
-        <TextInput placeholder='Search' style={{padding:0}}/>
-        <TouchableOpacity style={{marginLeft:'auto'}}>
-        <Sliders stroke={COLORS.BLACK} width={18} height={18} />
-            </TouchableOpacity>
-      </View>
-    );
+  const handleFilterVisibility = () => {
+    setFilterVisibility(false);
+  };
+  const handleOnPressFilterButton = () => {
+    setFilterVisibility(true);
   };
 
-  const CardItem = ({item}) => {
-    return (
-      <View
-        style={{
-          marginVertical: 10,
-          marginHorizontal: 10,
-          backgroundColor: COLORS.WHITE,
-          padding: 13,
-          borderRadius: 4,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <View
-            style={{
-              flex: 1,
-            }}>
-            <View
-              style={{
-                height: 30,
-                width: 30,
-                backgroundColor: COLORS.DARK_ORANGE,
-                borderRadius: 100,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={{fontSize: 15, fontWeight: '700', color: COLORS.WHITE}}>
-                T
-              </Text>
-            </View>
-          </View>
-
-          <View style={{marginHorizontal: 10, flex: 8}}>
-            <Text>Have to test NEST</Text>
-          </View>
-          <View style={{marginLeft: 'auto', flex: 3, alignItems: 'flex-end'}}>
-            <Text style={{lineHeight: 14, fontSize: 14}}>2023:11:11</Text>
-            <View
-              style={{
-                paddingHorizontal: 5,
-                paddingVertical: 1,
-                backgroundColor: COLORS.MATTE_RED,
-                borderRadius: 4,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={{fontSize: 14, color: COLORS.WHITE}}>Note</Text>
-            </View>
-          </View>
-        </View>
-        <View>
-          <Text numberOfLines={3} ellipsizeMode={'tail'}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum
-            dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit
-            amet, consectetur adipiscing elitLorem ipsum dolor sit amet,
-            consectetur adipiscing elit
-          </Text>
-        </View>
-        <View>
-          <TouchableOpacity
-            onPress={onPressToNavigate}
-            style={{
-              backgroundColor: COLORS.BLACK,
-              borderRadius: 4,
-              padding: 10,
-              marginTop: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{color: COLORS.WHITE}}>Read more</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+  const handleNoteTaskVisibility = () => {
+    setNoteTaskVisibility(false);
   };
-
-  const renderItem = ({item, index}) => <CardItem {...{item}} key={index} />;
-
-  const RenderList = () => {
-    return (
-      <View>
-        <FlatList data={[1, 2, 4, 1, 2, 4, 1, 2, 4]} renderItem={renderItem} ListFooterComponent={<View style={{height:100}}/>}/>
-      </View>
-    );
-  };
-
-  const FloatingActionButton = () => {
-    return (
-      <TouchableOpacity
-        style={{
-          backgroundColor: COLORS.DARK_ORANGE,
-          width: 55,
-          height: 55,
-          borderRadius: 100,
-          position: 'absolute',
-          right: 10,
-          bottom: 10,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Plus stroke={COLORS.BLACK} width={20} height={20} />
-      </TouchableOpacity>
-    );
+  const handleTaskVisibility = () => {
+    setTaskVisibility(false);
   };
 
   return (
-    <SafeAreaView style={{backgroundColor: COLORS.GRAY, flex: 1}}>
-      <SearchBar />
-      <RenderList />
-      <FloatingActionButton />
+    <SafeAreaView style={styles.container}>
+      <SearchBar onPressFilterButton={handleOnPressFilterButton} />
+      <ListRenderer
+        data={data}
+        onPressToNavigate={onPressToNavigate}
+        onRefresh={() => dispatch(getData())}
+        refreshLoader={loading}
+        footerComponent={<View style={{height: 100}} />}
+        onPressActions={e => {
+          switch (e) {
+            case CARD_TYPES.NOTE_TASK:
+              return setNoteTaskVisibility(true);
+              case CARD_TYPES.MULTIPLE_TODO:
+              return setTaskVisibility(true);
+            default:
+              return;
+          }
+        }}
+      />
+      <FloatingActionButton onPress={onPressFAB} />
+      <Loader visible={loading} />
+      <FilterModal
+        data={categories}
+        visible={filterVisibility}
+        setVisibility={handleFilterVisibility}
+      />
+      <NoteTaskModal
+        visible={noteTaskVisibility}
+        setVisibility={handleNoteTaskVisibility}
+      />
+      <TaskModal
+        data={[
+          {task: 'Task 1', isDone: true, index: 0},
+          {task: 'Task 2', isDone: true, index: 1},
+          {task: 'Task 3', isDone: false, index: 2},
+          {task: 'Task 4', isDone: false, index: 3},
+        ]}
+        visible={taskVisibility}
+        setVisibility={handleTaskVisibility}
+      />
     </SafeAreaView>
   );
 };
 
 export default MainScreen;
+
+const styles = StyleSheet.create({
+  container: {backgroundColor: COLORS.GRAY, flex: 1},
+});

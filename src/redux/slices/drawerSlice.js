@@ -1,21 +1,19 @@
-import { createSlice } from "@reduxjs/toolkit"
-
+import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
   value: true,
-}
+};
 
-const dummySlice = createSlice({
-  name:'drawer',
+const drawerSlice = createSlice({
+  name: 'drawer',
   initialState,
-  reducers:{
-    toggleState: (state,{payload}) => ({
+  reducers: {
+    toggleState: (state, {payload}) => ({
       ...state,
-      value : !state.value
+      value: !state.value,
     }),
   },
-})
+});
 
-
-export default dummySlice.reducer;
-export const {toggleState} = dummySlice.actions;
+export default drawerSlice.reducer;
+export const {toggleState} = drawerSlice.actions;

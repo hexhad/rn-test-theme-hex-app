@@ -1,30 +1,43 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import logger from "redux-logger";
-import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, persistStore } from 'redux-persist';
-import { mmkvStorage } from '@services/mmkvStorage';
+import {combineReducers, configureStore} from '@reduxjs/toolkit';
+import logger from 'redux-logger';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+  persistReducer,
+  persistStore,
+} from 'redux-persist';
+import {mmkvStorage} from '@services/mmkvStorage';
 import mainSlice from './slices/mainSlice';
-import drawerSlice from "./slices/drawerSlice";
+import drawerSlice from './slices/drawerSlice';
+import dataSlice from "@rtk/slices/dataSlice";
 
 const persistConfig = {
   key: 'root',
-  storage:mmkvStorage,
-  whitelist:['main']
-}
+  storage: mmkvStorage,
+  whitelist: ['main'],
+};
 
 const rootReducer = combineReducers({
   main: mainSlice,
-  drawer:drawerSlice,
-})
+  drawer: drawerSlice,
+  data: dataSlice,
+});
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
-
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware({
-    serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-  }),logger],
+  middleware: getDefaultMiddleware => [
+    ...getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+    logger,
+  ],
 });
-export const persistor = persistStore(store)
+export const persistor = persistStore(store);

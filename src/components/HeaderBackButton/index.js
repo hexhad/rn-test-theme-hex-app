@@ -9,7 +9,7 @@ const BackButton = () => {
   };
 
   return (
-    <TouchableOpacity onPress={onPressBackButton}>
+    <TouchableOpacity onPress={onPressBackButton} >
       <ChevronLeft stroke={COLORS.BLACK} width={20} height={20} />
     </TouchableOpacity>
   );

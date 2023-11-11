@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Text,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {COLORS} from '@constants/colorConstants';
@@ -15,7 +16,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {toggleState} from '@rtk/slices/drawerSlice';
 import CustomDrawer from '@components/CustomDrawer';
 import BookmarksScreen from '@navigation/screens/BookmarksScreens';
-import { navigationHeader } from '@styles/navigationStyles';
+import {navigationHeader} from '@styles/navigationStyles';
+import Loader from '@components/Loader';
+import {getValue} from '@rtk/selectors';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,70 +27,84 @@ const BottomTabs = () => {
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
 
-  const drawerValue = useSelector(state => state.drawer.value);
+  const drawerValue = useSelector(getValue);
 
   useEffect(() => {
+    const animateCustomDrawer = () => {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(scaleValue, {
+            toValue: drawerValue ? 1 : 0.88,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(offsetValue, {
+            toValue: drawerValue ? 0 : -280,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    };
+
     animateCustomDrawer();
   }, [drawerValue]);
 
-  const animateCustomDrawer = () => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(scaleValue, {
-          toValue: drawerValue ? 1 : 0.88,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(offsetValue, {
-          toValue: drawerValue ? 0 : -280,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
+  const HeaderLeft = () => {
+    return (
+      <View
+        style={{
+          marginLeft: 10,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Hexagon stroke={COLORS.BLACK} width={20} height={20} />
+        <Text style={{fontSize: 20, marginLeft: 10}}>Untitled</Text>
+      </View>
+    );
+  };
+  const HeaderRight = () => {
+    return (
+      <TouchableOpacity
+        onPress={() => dispatch(toggleState())}
+        style={styles.marginRightAdjust}>
+        <Settings stroke={COLORS.BLACK} width={20} height={20} />
+      </TouchableOpacity>
+    );
   };
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <Loader visible={false} />
       <CustomDrawer onPress={() => dispatch(toggleState())} />
       <Animated.View
-      pointerEvents={drawerValue ? 'auto':'none' }
-        style={{
-          flex: 1,
-          borderRadius: drawerValue ? 0 : 5,
-          overflow: 'hidden',
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          transform: [{scale: scaleValue}, {translateX: offsetValue}],
-        }}>
+        pointerEvents={drawerValue ? 'auto' : 'none'}
+        style={[
+          styles.mainWrapper,
+          {
+            borderRadius: drawerValue ? 0 : 5,
+            transform: [{scale: scaleValue}, {translateX: offsetValue}],
+          },
+        ]}>
         <Tab.Navigator
           screenOptions={{
             headerShown: false,
-            headerStyle:navigationHeader.headerStyle
+            headerStyle: navigationHeader.headerStyle,
           }}>
           <Tab.Screen
             name={SCREENS.MAIN_SCREEN}
             component={MainScreen}
             options={{
-              headerLeft: () => (<View style={{marginLeft: 10,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                <Hexagon stroke={COLORS.BLACK} width={20} height={20} /><Text style={{fontSize:20,marginLeft:10}}>Whitelabled</Text></View>),
-              headerRight: () => (
-                <TouchableOpacity
-                  onPress={() => dispatch(toggleState())}
-                  style={{marginRight: 10}}>
-                  <Settings stroke={COLORS.BLACK} width={20} height={20} />
-                </TouchableOpacity>
-              ),
+              headerLeft: () => <HeaderLeft />,
+              headerRight: () => <HeaderRight />,
               headerTitleAlign: 'center',
               headerShown: true,
               title: '',
               tabBarShowLabel: false,
               tabBarIcon: ({focused}) => (
                 <Coffee
-                  stroke={focused ? '#000' : '#808080'}
+                  stroke={focused ? COLORS.BLACK_HIGH : COLORS.GRAY_LOW}
                   width={20}
                   height={20}
                 />
@@ -101,17 +118,11 @@ const BottomTabs = () => {
               headerTitleAlign: 'center',
               headerShown: true,
               title: '',
-              headerRight: () => (
-                <TouchableOpacity
-                  onPress={() => dispatch(toggleState())}
-                  style={{marginRight: 10}}>
-                  <Settings stroke={COLORS.BLACK} width={20} height={20} />
-                </TouchableOpacity>
-              ),
+              headerRight: () => <HeaderRight />,
               tabBarShowLabel: false,
               tabBarIcon: ({focused}) => (
                 <Bookmark
-                  stroke={focused ? '#000' : '#808080'}
+                  stroke={focused ? COLORS.BLACK_HIGH : COLORS.GRAY_LOW}
                   width={20}
                   height={20}
                 />
@@ -125,3 +136,16 @@ const BottomTabs = () => {
 };
 
 export default BottomTabs;
+
+const styles = StyleSheet.create({
+  mainWrapper: {
+    flex: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  marginRightAdjust: {marginRight: 10},
+});
