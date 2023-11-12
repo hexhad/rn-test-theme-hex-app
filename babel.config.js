@@ -18,7 +18,7 @@ module.exports = {
           '.jpg',
           '.json',
         ],
-        alias:{
+        alias: {
           '@src': './src/',
           '@components': './src/components/',
           '@constants': './src/constants/',
@@ -27,8 +27,9 @@ module.exports = {
           '@services': './src/services/',
           '@utils': './src/utils/',
           '@styles': './src/styles/',
-        }
+        },
       },
     ],
+    'react-native-reanimated/plugin',
   ],
 };

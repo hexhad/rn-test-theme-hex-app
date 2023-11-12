@@ -1,4 +1,3 @@
-import ScreenOne from '@navigation/screens/MainScreen';
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {persistor, store} from '@rtk/store';
